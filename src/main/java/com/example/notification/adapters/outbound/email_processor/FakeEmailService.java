@@ -15,7 +15,6 @@ import java.util.List;
 @Setter
 @Service
 @Profile("test")
-@Component
 public class FakeEmailService implements EmailServicePort {
 
     public FakeEmailService() {
