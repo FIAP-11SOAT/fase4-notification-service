@@ -4,6 +4,8 @@ import com.example.notification.adapters.dto.http.NotificationBodyDto;
 import com.example.notification.core.model.NotificationRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class NotificationControllerConverter {
 
@@ -19,7 +21,8 @@ public class NotificationControllerConverter {
                         body.payload().items(),
                         body.payload().amount(),
                         body.payload().qrCode()
-                )
+                ),
+                LocalDateTime.now()
         );
     }
 }

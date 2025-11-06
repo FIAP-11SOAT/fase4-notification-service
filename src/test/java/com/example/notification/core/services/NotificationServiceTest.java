@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -44,7 +45,8 @@ class NotificationServiceTest {
                         List.of(new ItemDto(1, "Hambúrguer Clássico", 1)),
                         BigDecimal.TEN,
                         "00020126580014BR.GOV.BCB.PIX0136e0e7c2b8-9f9b-4f21-b9e2-abc123456789520400005303986540545.805802BR5920Amanda Costa6009Sao Paulo62070503***6304ABCD"
-                )
+                ),
+                LocalDateTime.now()
         );
         service.notify(notificationRequest);
         ArgumentCaptor<EmailDto> captor = ArgumentCaptor.forClass(EmailDto.class);

@@ -37,7 +37,7 @@ public class NotificationControllerFunctionalTest {
     @Test
     void shouldSendEmailUsingFakeEmailService() throws Exception{
         NotificationBodyDto body = new NotificationBodyDto(
-                new NotificationBodyDto.MetaDataDto("", LocalDate.now(), "", "", EventTypeEnum.PRODUCTION_COMPLETED),
+                new NotificationBodyDto.MetaDataDto("", "", "", EventTypeEnum.PRODUCTION_COMPLETED),
                 new NotificationBodyDto.PayloadDto("Fulano de tal", "email@mail.com", 1234,
                         List.of(new ItemDto(1, "Hambúrguer Clássico", 1)),
                         BigDecimal.TEN,
