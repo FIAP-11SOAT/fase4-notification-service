@@ -1,10 +1,24 @@
 package com.example.notification.core.model;
 
-import com.example.notification.adapters.outbound.dto.EmailDto;
+import com.example.notification.shared.constants.EventTypeEnum;
+import com.example.notification.shared.dto.ItemDto;
 
-public record NotificationRequest(String to, String subject, String body) {
+import java.math.BigDecimal;
+import java.util.List;
 
-    public EmailDto convertToEmailDto(NotificationRequest request){
-        return new EmailDto(request.to(), request.subject(), request.body());
+public record NotificationRequest(User user, EventTypeEnum eventType, Payload payload) {
+
+    public record User(
+            String name,
+            String email
+    ){
+    }
+
+    public record Payload(
+            Integer orderId,
+            List<ItemDto> items,
+            BigDecimal amount,
+            String qrCode
+    ) {
     }
 }

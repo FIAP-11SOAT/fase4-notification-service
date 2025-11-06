@@ -1,4 +1,4 @@
-package com.example.notification.adapters.dto.http;
+package com.example.notification.adapters.dto.queue;
 
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public record NotificationBodyDto(
+public record MessageQueueDto(
         MetaDataDto meta,
         PayloadDto payload
 ) {
@@ -31,3 +31,4 @@ public record NotificationBodyDto(
     ) {
     }
 }
+

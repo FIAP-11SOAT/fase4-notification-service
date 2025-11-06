@@ -8,6 +8,18 @@ import org.springframework.stereotype.Component;
 public class NotificationControllerConverter {
 
     public NotificationRequest convertToNotifyRequest(NotificationBodyDto body){
-        return new NotificationRequest(body.to(), body.subject(), body.body());
+        return new NotificationRequest(
+                new NotificationRequest.User(
+                        body.payload().customerName(),
+                        body.payload().customerEmail()
+                ),
+                body.meta().eventName(),
+                new NotificationRequest.Payload(
+                        body.payload().orderId(),
+                        body.payload().items(),
+                        body.payload().amount(),
+                        body.payload().qrCode()
+                )
+        );
     }
 }
