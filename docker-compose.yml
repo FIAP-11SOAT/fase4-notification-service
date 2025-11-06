@@ -5,3 +5,26 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: localstack-main
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # external services port range
+    environment:
+      - SERVICES=sqs,s3
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./init-localstack.sh:/etc/localstack/init/ready.d/init-aws.sh"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
