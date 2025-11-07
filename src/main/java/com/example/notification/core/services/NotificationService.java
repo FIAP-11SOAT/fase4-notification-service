@@ -5,60 +5,58 @@ import com.example.notification.adapters.outbound.email_processor.EmailServicePo
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
-import com.example.notification.core.services.templates.PaymentCompletedTemplate;
-import com.example.notification.core.services.templates.PaymentCreatedTemplate;
-import com.example.notification.core.services.templates.PaymentFailedTemplate;
-import com.example.notification.core.services.templates.ProductionCompletedTemplate;
+import com.example.notification.core.services.templates.*;
 import com.example.notification.shared.constants.EventTypeEnum;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
 public class NotificationService implements NotificationServicePort {
 
     private final EmailServicePort emailService;
+    private final TemplateRendererService templateRendererService;
+    private final Map<EventTypeEnum, TemplateServicePort> templates;
 
-    @Autowired
-    public NotificationService(EmailServicePort emailService) {
+    public NotificationService(
+            EmailServicePort emailService,
+            TemplateRendererService templateRendererService,
+            List<TemplateServicePort> templates
+    ) {
         this.emailService = emailService;
+        this.templateRendererService = templateRendererService;
+        this.templates = templates.stream().collect(Collectors.toMap(
+                t -> switch (t.getTemplateName()) {
+                    case "payment-created" -> EventTypeEnum.PAYMENT_CREATED;
+                    case "payment-completed" -> EventTypeEnum.PAYMENT_COMPLETED;
+                    case "payment-failed" -> EventTypeEnum.PAYMENT_FAILED;
+                    case "production-completed" -> EventTypeEnum.PRODUCTION_COMPLETED;
+                    default -> null;
+                },
+                t -> t
+        ));
     }
 
     @Override
     public void notify(NotificationRequest request) {
+        TemplateServicePort templateService = templates.get(request.eventType());
 
-        Optional<TemplateServicePort> templateServicePort = selectTemplateService(request.eventType());
-
-        if(templateServicePort.isPresent()){
-            TemplateServicePort templateService = templateServicePort.get();
-            String messageBody = templateService.returnBodyMessage(request.user(), request.payload());
-            String to = request.user().email();
-            String subject = request.eventType().getMessage();
-
-            EmailDto emailDto = new EmailDto(to, subject, messageBody);
-            emailService.sendEmail(emailDto);
-        }
-    }
-
-    private Optional<TemplateServicePort> selectTemplateService(EventTypeEnum eventType){
-        if (eventType.equals(EventTypeEnum.PAYMENT_CREATED)){
-            return Optional.of(new PaymentCreatedTemplate());
+        if (templateService == null) {
+            throw new IllegalArgumentException("No template found for event: " + request.eventType());
         }
 
-        if (eventType.equals(EventTypeEnum.PAYMENT_COMPLETED)){
-            return Optional.of(new PaymentCompletedTemplate());
-        }
+        String htmlBody = templateRendererService.render(
+                templateService.getTemplateName(),
+                templateService.getVariables(request.user(), request.payload())
+        );
 
-        if (eventType.equals(EventTypeEnum.PAYMENT_FAILED)){
-            return Optional.of(new PaymentFailedTemplate());
-        }
+        String to = request.user().email();
+        String subject = request.eventType().getMessage();
 
-        if (eventType.equals(EventTypeEnum.PRODUCTION_COMPLETED)){
-            return Optional.of(new ProductionCompletedTemplate());
-        }
-
-        return Optional.empty();
+        EmailDto emailDto = new EmailDto(to, subject, htmlBody);
+        emailService.sendEmail(emailDto);
     }
 }

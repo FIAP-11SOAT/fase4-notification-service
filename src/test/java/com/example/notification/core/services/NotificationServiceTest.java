@@ -4,14 +4,19 @@ import com.example.notification.adapters.outbound.dto.EmailDto;
 import com.example.notification.adapters.outbound.email_processor.EmailServicePort;
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.ports.NotificationServicePort;
+import com.example.notification.core.ports.TemplateServicePort;
+import com.example.notification.core.services.templates.PaymentCompletedTemplate;
+import com.example.notification.core.services.templates.TemplateRendererService;
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
+import com.example.notification.shared.utils.QrCodeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.mockito.*;
+import org.thymeleaf.TemplateEngine;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,12 +29,23 @@ class NotificationServiceTest {
     @Mock
     private EmailServicePort emailServicePort;
 
+    @Mock
+    private TemplateRendererService templateRendererService;
+
+    @Mock
+    private TemplateEngine templateEngine;
+
+    @Mock
+    private QrCodeGenerator qrCodeGenerator;
+
     private NotificationServicePort service;
 
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
-        service = new NotificationService(emailServicePort);
+
+        List<TemplateServicePort> templates = List.of(new PaymentCompletedTemplate(templateEngine, qrCodeGenerator));
+        service = new NotificationService(emailServicePort, templateRendererService, templates);
     }
 
     @Test

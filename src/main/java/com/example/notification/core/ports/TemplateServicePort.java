@@ -2,7 +2,10 @@ package com.example.notification.core.ports;
 
 import com.example.notification.core.model.NotificationRequest;
 
-public interface TemplateServicePort {
+import java.util.Map;
 
-    public String returnBodyMessage(NotificationRequest.User user, NotificationRequest.Payload payload);
+public interface TemplateServicePort {
+    String getTemplateName();
+    Map<String, Object> getVariables(NotificationRequest.User user, NotificationRequest.Payload payload);
+    String generateContent(NotificationRequest request);
 }
