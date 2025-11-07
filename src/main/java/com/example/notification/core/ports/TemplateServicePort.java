@@ -6,6 +6,6 @@ import java.util.Map;
 
 public interface TemplateServicePort {
     String getTemplateName();
+    String getEmailSubject();
     Map<String, Object> getVariables(NotificationRequest.User user, NotificationRequest.Payload payload);
-    String generateContent(NotificationRequest request);
 }

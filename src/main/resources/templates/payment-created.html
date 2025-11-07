@@ -2,7 +2,7 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Pagamento SUCESSO</title>
+    <title>Pedido criado</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,7 +51,6 @@
 </head>
 <body>
 <div class="container">
-    <h1>PAYMENT-CREATED</h1>
     <h2>Olá, <span th:text="${customerName}">Cliente</span>!</h2>
     <p>O seu pedido de número <strong th:text="${orderId}">1234</strong> foi criado e está disponível para pagamento.</p>
     <p> <strong>Valor Total: </strong>  <span th:text="${amount}">xxx</span></p>
@@ -60,7 +59,7 @@
         <table>
             <thead>
             <tr>
-                <th>Produto</th>
+                <th>Item</th>
                 <th>Quantidade</th>
             </tr>
             </thead>

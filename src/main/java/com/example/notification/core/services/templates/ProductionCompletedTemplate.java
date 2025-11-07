@@ -18,12 +18,16 @@ public class ProductionCompletedTemplate implements TemplateServicePort {
     }
 
     @Override
-    public Map<String, Object> getVariables(NotificationRequest.User user, NotificationRequest.Payload payload) {
-        return Map.of();
+    public String getEmailSubject() {
+        return "Totem: Seu pedido está pronto \uD83C\uDF54";
     }
 
     @Override
-    public String generateContent(NotificationRequest request) {
-        return "";
+    public Map<String, Object> getVariables(NotificationRequest.User user, NotificationRequest.Payload payload) {
+        return Map.of(
+                "customerName", user.name(),
+                "orderId", payload.orderId(),
+                "items", payload.items()
+        );
     }
 }

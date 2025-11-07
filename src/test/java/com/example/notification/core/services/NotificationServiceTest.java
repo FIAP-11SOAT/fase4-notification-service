@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.mockito.*;
-import org.thymeleaf.TemplateEngine;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,19 +31,13 @@ class NotificationServiceTest {
     @Mock
     private TemplateRendererService templateRendererService;
 
-    @Mock
-    private TemplateEngine templateEngine;
-
-    @Mock
-    private QrCodeGenerator qrCodeGenerator;
-
     private NotificationServicePort service;
 
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
 
-        List<TemplateServicePort> templates = List.of(new PaymentCompletedTemplate(templateEngine, qrCodeGenerator));
+        List<TemplateServicePort> templates = List.of(new PaymentCompletedTemplate());
         service = new NotificationService(emailServicePort, templateRendererService, templates);
     }
 

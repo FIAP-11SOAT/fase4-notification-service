@@ -7,17 +7,15 @@ import java.util.Locale;
 
 public enum EventTypeEnum {
 
-    PAYMENT_CREATED("payment-created-event", "Totem: Pedido criado e pagamento disponível"),
-    PAYMENT_COMPLETED("payment-completed-event", "Totem: Pagamento aprovado!"),
-    PAYMENT_FAILED("payment-failed-event", "Totem: Pagamento falhou"),
-    PRODUCTION_COMPLETED("production-completed-event", "Totem: Seu pedido está pronto!");
+    PAYMENT_CREATED("payment-created-event"),
+    PAYMENT_COMPLETED("payment-completed-event"),
+    PAYMENT_FAILED("payment-failed-event"),
+    PRODUCTION_COMPLETED("production-completed-event");
 
     private final String value;
-    private final String message;
 
-    EventTypeEnum(String value, String message) {
+    EventTypeEnum(String value) {
         this.value = value.toLowerCase(Locale.ROOT);
-        this.message = message;
     }
 
     @JsonValue
@@ -33,9 +31,5 @@ public enum EventTypeEnum {
             }
         }
         throw new IllegalArgumentException("Unknown event type: " + value);
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

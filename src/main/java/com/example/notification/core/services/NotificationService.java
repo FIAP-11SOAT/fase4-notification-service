@@ -54,7 +54,7 @@ public class NotificationService implements NotificationServicePort {
         );
 
         String to = request.user().email();
-        String subject = request.eventType().getMessage();
+        String subject = templateService.getEmailSubject();
 
         EmailDto emailDto = new EmailDto(to, subject, htmlBody);
         emailService.sendEmail(emailDto);

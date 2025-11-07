@@ -2,7 +2,7 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Pagamento SUCESSO</title>
+    <title>Tudo certo com o pagamento</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,16 +51,15 @@
 </head>
 <body>
 <div class="container">
-    <h1>PAYMENT-COMPLETED</h1>
     <h2>Olá, <span th:text="${customerName}">Cliente</span>!</h2>
-    <p>O seu pedido de número <strong th:text="${orderId}">1234</strong> foi criado e está disponível para pagamento.</p>
-    <p> <strong>Valor Total: </strong>  <span th:text="${orderId}">R$65.90</span></p>
+    <p>O seu pedido de número <strong th:text="${orderId}">1234</strong> teve o pagamento aprovado e está em produção.</p>
+    <p>Em breve voltamos com atualizações.</p>
 
     <div class="div-table">
         <table>
             <thead>
             <tr>
-                <th>Produto</th>
+                <th>Item</th>
                 <th>Quantidade</th>
             </tr>
             </thead>
@@ -71,11 +70,6 @@
             </tr>
             </tbody>
         </table>
-    </div>
-
-    <div class="qr-container">
-        <p>Escaneie o QR Code abaixo para realizar o pagamento:</p>
-        <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR Code"/>
     </div>
 
     <div class="footer">
