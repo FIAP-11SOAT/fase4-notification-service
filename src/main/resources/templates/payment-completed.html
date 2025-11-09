@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tudo certo com o pagamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        h2 { color: #2c3e50; }
+        .div-table{
+           width: 100%;
+           display: flex;
+           justify-content: center;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th { background-color: #f1f1f1; }
+        .qr-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .qr-container img {
+            width: 200px;
+            height: 200px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Olá, <span th:text="${customerName}">Cliente</span>!</h2>
+    <p>O seu pedido de número <strong th:text="${orderId}">1234</strong> teve o pagamento aprovado e está em produção.</p>
+    <p>Em breve voltamos com atualizações.</p>
+
+    <div class="div-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.name}">Produto</td>
+                <td th:text="${item.quantity}">1</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Obrigado por comprar conosco 💙</p>
+    </div>
+</div>
+</body>
+</html>

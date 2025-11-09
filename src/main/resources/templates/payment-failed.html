@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Houve um problema com o pagamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        h2 { color: #2c3e50; }
+        .div-table{
+           width: 100%;
+           display: flex;
+           justify-content: center;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th { background-color: #f1f1f1; }
+        .qr-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .qr-container img {
+            width: 200px;
+            height: 200px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Olá, <span th:text="${customerName}">Cliente</span>!</h2>
+    <p>O pagamento do pedido <strong th:text="${orderId}">1234</strong> foi recusado, tente novamente com o QRCode abaixo</p>
+    <p>Em breve voltamos com atualizações.</p>
+
+    <p> <strong>Valor Total: </strong>  <span th:text="${amount}">xxx</span></p>
+
+    <div class="div-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.name}">Produto</td>
+                <td th:text="${item.quantity}">1</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="qr-container">
+        <p>Escaneie o QR Code abaixo para realizar o pagamento:</p>
+        <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR Code"/>
+    </div>
+
+    <div class="footer">
+        <p>Obrigado por comprar conosco 💙</p>
+    </div>
+</div>
+</body>
+</html>
