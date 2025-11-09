@@ -9,7 +9,6 @@ import com.example.notification.core.services.templates.PaymentCompletedTemplate
 import com.example.notification.core.services.templates.TemplateRendererService;
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
-import com.example.notification.shared.utils.QrCodeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
