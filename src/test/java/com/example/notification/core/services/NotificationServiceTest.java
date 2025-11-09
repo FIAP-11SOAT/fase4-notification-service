@@ -5,12 +5,13 @@ import com.example.notification.adapters.outbound.email_processor.EmailServicePo
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
-import com.example.notification.core.services.templates.PaymentCompletedTemplate;
-import com.example.notification.core.services.templates.TemplateRendererService;
+import com.example.notification.core.services.templates.*;
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
+import com.example.notification.shared.utils.QrCodeGenerator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -19,6 +20,7 @@ import org.mockito.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -30,36 +32,57 @@ class NotificationServiceTest {
     @Mock
     private TemplateRendererService templateRendererService;
 
+    @Mock
+    private QrCodeGenerator qrCodeGeneratorService;
+
     private NotificationServicePort service;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        List<TemplateServicePort> templates = List.of(new PaymentCompletedTemplate());
+        List<TemplateServicePort> templates = List.of(
+                new PaymentCompletedTemplate(),
+                new PaymentCreatedTemplate(qrCodeGeneratorService),
+                new PaymentFailedTemplate(qrCodeGeneratorService),
+                new ProductionCompletedTemplate()
+        );
         service = new NotificationService(emailServicePort, templateRendererService, templates);
     }
 
-    @Test
-    void shouldCallSendEmail(){
+    private record TestCase(EventTypeEnum eventType, String qrCode) {}
+
+    private static Stream<TestCase> provideNotificationCases() {
+        return Stream.of(
+                new TestCase(EventTypeEnum.PAYMENT_CREATED, "PIX_CODE"),
+                new TestCase(EventTypeEnum.PAYMENT_FAILED, "PIX_CODE"),
+                new TestCase(EventTypeEnum.PAYMENT_COMPLETED, null),
+                new TestCase(EventTypeEnum.PRODUCTION_COMPLETED, null)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNotificationCases")
+    void shouldCallSendEmailForAllEventTypes(TestCase testCase) {
         NotificationRequest notificationRequest = new NotificationRequest(
-                new NotificationRequest.User(
-                        "Amanda Costa",
-                        "amanda.costa@example.com"
-                ),
-                EventTypeEnum.PAYMENT_COMPLETED,
+                new NotificationRequest.User("John Doe", "john.doe@example.com"),
+                testCase.eventType(),
                 new NotificationRequest.Payload(
                         9876,
                         List.of(new ItemDto(1, "Hambúrguer Clássico", 1)),
                         BigDecimal.TEN,
-                        "00020126580014BR.GOV.BCB.PIX0136e0e7c2b8-9f9b-4f21-b9e2-abc123456789520400005303986540545.805802BR5920Amanda Costa6009Sao Paulo62070503***6304ABCD"
+                        testCase.qrCode()
                 ),
                 LocalDateTime.now()
         );
-        service.notify(notificationRequest);
-        ArgumentCaptor<EmailDto> captor = ArgumentCaptor.forClass(EmailDto.class);
 
+        if (testCase.qrCode() != null) {
+            when(qrCodeGeneratorService.generateBase64Qr(anyString()))
+                    .thenReturn("QR_CODE_EM_BASE64");
+        }
+
+        service.notify(notificationRequest);
+
+        ArgumentCaptor<EmailDto> captor = ArgumentCaptor.forClass(EmailDto.class);
         verify(emailServicePort, times(1)).sendEmail(captor.capture());
     }
-
 }

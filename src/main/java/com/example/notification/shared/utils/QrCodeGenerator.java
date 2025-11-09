@@ -20,7 +20,7 @@ public class QrCodeGenerator {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
             return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        } catch (WriterException | java.io.IOException e) {
+        } catch (Exception  e) {
             throw new RuntimeException("Erro ao gerar QR Code", e);
         }
     }
