@@ -11,6 +11,7 @@ public class NotificationControllerConverter {
 
     public NotificationRequest convertToNotifyRequest(NotificationBodyDto body){
         return new NotificationRequest(
+                body.meta().eventId(),
                 new NotificationRequest.User(
                         body.payload().customerName(),
                         body.payload().customerEmail()
@@ -22,7 +23,8 @@ public class NotificationControllerConverter {
                         body.payload().amount(),
                         body.payload().qrCode()
                 ),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
     }
 }

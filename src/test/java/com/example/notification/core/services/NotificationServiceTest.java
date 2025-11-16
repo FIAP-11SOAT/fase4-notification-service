@@ -2,6 +2,7 @@ package com.example.notification.core.services;
 
 import com.example.notification.adapters.outbound.dto.EmailDto;
 import com.example.notification.adapters.outbound.email_processor.EmailServicePort;
+import com.example.notification.adapters.outbound.repository.RepositoryPort;
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
@@ -35,6 +36,9 @@ class NotificationServiceTest {
     @Mock
     private QrCodeGenerator qrCodeGeneratorService;
 
+    @Mock
+    private RepositoryPort repository;
+
     private NotificationServicePort service;
 
     @BeforeEach
@@ -46,7 +50,7 @@ class NotificationServiceTest {
                 new PaymentFailedTemplate(qrCodeGeneratorService),
                 new ProductionCompletedTemplate()
         );
-        service = new NotificationService(emailServicePort, templateRendererService, templates);
+        service = new NotificationService(emailServicePort, templateRendererService, templates, repository);
     }
 
     private record TestCase(EventTypeEnum eventType, String qrCode) {}
@@ -64,6 +68,7 @@ class NotificationServiceTest {
     @MethodSource("provideNotificationCases")
     void shouldCallSendEmailForAllEventTypes(TestCase testCase) {
         NotificationRequest notificationRequest = new NotificationRequest(
+                "event_id",
                 new NotificationRequest.User("John Doe", "john.doe@example.com"),
                 testCase.eventType(),
                 new NotificationRequest.Payload(
@@ -72,7 +77,8 @@ class NotificationServiceTest {
                         BigDecimal.TEN,
                         testCase.qrCode()
                 ),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
         if (testCase.qrCode() != null) {
