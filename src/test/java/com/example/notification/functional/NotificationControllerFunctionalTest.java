@@ -2,6 +2,7 @@ package com.example.notification.functional;
 
 import com.example.notification.adapters.dto.http.NotificationBodyDto;
 import com.example.notification.adapters.outbound.email_processor.FakeEmailService;
+import com.example.notification.adapters.outbound.repository.RepositoryPort;
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,10 +34,13 @@ public class NotificationControllerFunctionalTest {
     @Autowired
     private FakeEmailService fakeEmailService;
 
+    @Autowired
+    private RepositoryPort repository;
+
     @Test
     void shouldSendEmailUsingFakeEmailService() throws Exception{
         NotificationBodyDto body = new NotificationBodyDto(
-                new NotificationBodyDto.MetaDataDto("", "", "", EventTypeEnum.PRODUCTION_COMPLETED),
+                new NotificationBodyDto.MetaDataDto("test-event-id", "", "", EventTypeEnum.PRODUCTION_COMPLETED),
                 new NotificationBodyDto.PayloadDto("Fulano de tal", "email@mail.com", 1234,
                         List.of(new ItemDto(1, "Hambúrguer Clássico", 1)),
                         BigDecimal.TEN,
@@ -52,5 +56,7 @@ public class NotificationControllerFunctionalTest {
 
         assertFalse(fakeEmailService.getSentEmails().isEmpty());
         assertTrue(fakeEmailService.getSentEmails().getFirst().contains("email@mail.com"));
+
+        assertEquals("test-event-id", repository.findById("test-event-id").id());
     }
 }

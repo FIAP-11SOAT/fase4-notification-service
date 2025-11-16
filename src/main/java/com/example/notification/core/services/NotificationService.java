@@ -8,13 +8,14 @@ import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
 import com.example.notification.core.services.templates.*;
 import com.example.notification.shared.constants.EventTypeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 public class NotificationService implements NotificationServicePort {
 
@@ -68,6 +69,7 @@ public class NotificationService implements NotificationServicePort {
         } catch (Exception e) {
             request = request.withFailedEmail(true);
             repository.save(request);
+            log.error("[NotificationService]: Error handling request {}", e.getMessage());
         }
     }
 }
