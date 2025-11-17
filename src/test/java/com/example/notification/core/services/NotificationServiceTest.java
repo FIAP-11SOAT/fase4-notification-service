@@ -2,6 +2,7 @@ package com.example.notification.core.services;
 
 import com.example.notification.adapters.outbound.dto.EmailDto;
 import com.example.notification.adapters.outbound.email_processor.EmailServicePort;
+import com.example.notification.adapters.outbound.repository.RepositoryPort;
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
@@ -35,6 +36,9 @@ class NotificationServiceTest {
     @Mock
     private QrCodeGenerator qrCodeGeneratorService;
 
+    @Mock
+    private RepositoryPort repository;
+
     private NotificationServicePort service;
 
     @BeforeEach
@@ -46,7 +50,7 @@ class NotificationServiceTest {
                 new PaymentFailedTemplate(qrCodeGeneratorService),
                 new ProductionCompletedTemplate()
         );
-        service = new NotificationService(emailServicePort, templateRendererService, templates);
+        service = new NotificationService(emailServicePort, templateRendererService, templates, repository);
     }
 
     private record TestCase(EventTypeEnum eventType, String qrCode) {}
@@ -63,26 +67,49 @@ class NotificationServiceTest {
     @ParameterizedTest
     @MethodSource("provideNotificationCases")
     void shouldCallSendEmailForAllEventTypes(TestCase testCase) {
-        NotificationRequest notificationRequest = new NotificationRequest(
-                new NotificationRequest.User("John Doe", "john.doe@example.com"),
-                testCase.eventType(),
-                new NotificationRequest.Payload(
-                        9876,
-                        List.of(new ItemDto(1, "Hambúrguer Clássico", 1)),
-                        BigDecimal.TEN,
-                        testCase.qrCode()
-                ),
-                LocalDateTime.now()
-        );
+        NotificationRequest request = buildRequest(testCase);
 
         if (testCase.qrCode() != null) {
             when(qrCodeGeneratorService.generateBase64Qr(anyString()))
                     .thenReturn("QR_CODE_EM_BASE64");
         }
 
-        service.notify(notificationRequest);
+        service.notify(request);
 
-        ArgumentCaptor<EmailDto> captor = ArgumentCaptor.forClass(EmailDto.class);
-        verify(emailServicePort, times(1)).sendEmail(captor.capture());
+        ArgumentCaptor<EmailDto> emailDtoCaptor = ArgumentCaptor.forClass(EmailDto.class);
+        ArgumentCaptor<NotificationRequest> requestCaptor = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(emailServicePort, times(1)).sendEmail(emailDtoCaptor.capture());
+        verify(repository, times(1)).save(requestCaptor.capture());
+        verify(repository).save(argThat(r -> !r.failedEmail()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNotificationCases")
+    void shouldSetFailedEmailWhenTemplateRenderingFails(TestCase testCase) {
+        NotificationRequest request = buildRequest(testCase);
+
+        when(templateRendererService.render(anyString(), anyMap()))
+                .thenThrow(new RuntimeException("render fail"));
+
+        service.notify(request);
+
+        verify(emailServicePort, never()).sendEmail(any());
+        verify(repository).save(argThat(NotificationRequest::failedEmail));
+    }
+
+    private NotificationRequest buildRequest(TestCase testCase) {
+        return new NotificationRequest(
+                "event_id",
+                new NotificationRequest.User("John Doe", "john@example.com"),
+                testCase.eventType(),
+                new NotificationRequest.Payload(
+                        123,
+                        List.of(new ItemDto(1, "Item X", 1)),
+                        BigDecimal.TEN,
+                        testCase.qrCode()
+                ),
+                LocalDateTime.now(),
+                null
+        );
     }
 }

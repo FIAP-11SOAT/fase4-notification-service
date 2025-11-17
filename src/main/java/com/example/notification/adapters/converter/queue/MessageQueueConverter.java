@@ -11,6 +11,7 @@ public class MessageQueueConverter {
 
     public NotificationRequest convertToNotifyRequest(MessageQueueDto message){
         return new NotificationRequest(
+                message.meta().eventId(),
                 new NotificationRequest.User(
                         message.payload().customerName(),
                         message.payload().customerEmail()
@@ -22,7 +23,8 @@ public class MessageQueueConverter {
                         message.payload().amount(),
                         message.payload().qrCode()
                 ),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
     }
 }
