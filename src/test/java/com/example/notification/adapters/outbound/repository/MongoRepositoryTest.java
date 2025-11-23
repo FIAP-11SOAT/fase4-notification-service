@@ -4,6 +4,7 @@ import com.example.notification.core.model.NotificationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.math.BigDecimal;
@@ -19,6 +20,9 @@ class MongoRepositoryTest {
     private MongoTemplate mongoTemplate;
 
     private MongoRepository repository;
+
+    @Value("${table.notifications}")
+    private String TABLE;
 
     @BeforeEach
     void setUp() {
@@ -49,7 +53,7 @@ class MongoRepositoryTest {
         repository.save(request);
 
         verify(mongoTemplate, times(1))
-                .save(eq(request), eq("notifications"));
+                .save(eq(request), eq(TABLE));
     }
 
     @Test
@@ -63,14 +67,14 @@ class MongoRepositoryTest {
         assertDoesNotThrow(() -> repository.save(request));
 
         verify(mongoTemplate, times(1))
-                .save(eq(request), eq("notifications"));
+                .save(eq(request), eq(TABLE));
     }
 
     @Test
     void findById_ShouldReturnDocument() {
         NotificationRequest expected = buildRequest();
 
-        when(mongoTemplate.findById("123", NotificationRequest.class, "notifications"))
+        when(mongoTemplate.findById("123", NotificationRequest.class, TABLE))
                 .thenReturn(expected);
 
         NotificationRequest result = repository.findById("123");
@@ -81,7 +85,7 @@ class MongoRepositoryTest {
 
     @Test
     void findById_ShouldReturnNullWhenNotFound() {
-        when(mongoTemplate.findById("123", NotificationRequest.class, "notifications"))
+        when(mongoTemplate.findById("123", NotificationRequest.class, TABLE))
                 .thenReturn(null);
 
         NotificationRequest result = repository.findById("123");

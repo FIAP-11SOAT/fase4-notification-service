@@ -2,7 +2,6 @@ package com.example.notification.core.model;
 
 import com.example.notification.shared.constants.EventTypeEnum;
 import com.example.notification.shared.dto.ItemDto;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
