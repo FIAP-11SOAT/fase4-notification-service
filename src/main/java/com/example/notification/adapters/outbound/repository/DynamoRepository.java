@@ -2,6 +2,8 @@ package com.example.notification.adapters.outbound.repository;
 
 import com.example.notification.core.model.NotificationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -10,24 +12,34 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Repository
 @Profile("prod")
 public class DynamoRepository implements RepositoryPort {
 
     private final DynamoDbClient dynamoDbClient;
-    private static final String TABLE = "notification-service-production-notifications";
+    private final ObjectMapper objectMapper;
 
-    public DynamoRepository(DynamoDbClient dynamoDbClient) {
+    @Value("${table.notifications}")
+    private String TABLE;
+
+    public DynamoRepository(DynamoDbClient dynamoDbClient, ObjectMapper objectMapper) {
         this.dynamoDbClient = dynamoDbClient;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public void save(NotificationRequest messageRequest) {
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put("id", AttributeValue.fromS(messageRequest.id()));
-        item.put("orderId", AttributeValue.fromN(messageRequest.payload().orderId().toString()));
-        item.put("payload", AttributeValue.fromS(serialize(messageRequest)));
-        dynamoDbClient.putItem(r -> r.tableName(TABLE).item(item));
+        try{
+            Map<String, AttributeValue> item = new HashMap<>();
+            item.put("id", AttributeValue.fromS(messageRequest.id()));
+            item.put("orderId", AttributeValue.fromN(messageRequest.payload().orderId().toString()));
+            item.put("payload", AttributeValue.fromS(serialize(messageRequest)));
+            dynamoDbClient.putItem(r -> r.tableName(TABLE).item(item));
+        } catch (Exception e){
+            log.error("[DynamoRepository]: Error save() {}", e.getMessage());
+            throw e;
+        }
     }
 
     @Override
@@ -45,14 +57,20 @@ public class DynamoRepository implements RepositoryPort {
 
     private String serialize(NotificationRequest req) {
         try {
-            return new ObjectMapper().writeValueAsString(req);
-        } catch (Exception e) { throw new RuntimeException(e); }
+            return objectMapper.writeValueAsString(req);
+        } catch (Exception e) {
+            log.error("[DynamoRepository]: Error serialize() {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     private NotificationRequest deserialize(String data) {
         try {
-            return new ObjectMapper().readValue(data, NotificationRequest.class);
-        } catch (Exception e) { throw new RuntimeException(e); }
+            return objectMapper.readValue(data, NotificationRequest.class);
+        } catch (Exception e) {
+            log.error("[DynamoRepository]: Error deserialize() {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }
 
