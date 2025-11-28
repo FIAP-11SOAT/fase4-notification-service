@@ -1,3 +1,5 @@
+# DynamoDB
+
 resource "aws_dynamodb_table" "notifications" {
   name         = "${var.project_name}-${var.environment}-notifications"
   billing_mode = "PAY_PER_REQUEST"

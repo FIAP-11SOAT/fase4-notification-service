@@ -1,11 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# Variáveis
 REGION="us-east-1"
 BUCKET_NAME="notification-service-tfstate-268021560448"
 
-# Verifica se o bucket já existe
 if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
   echo "✅ Bucket $BUCKET_NAME já existe."
 else
