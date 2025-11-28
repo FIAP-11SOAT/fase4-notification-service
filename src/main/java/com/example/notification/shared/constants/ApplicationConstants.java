@@ -6,5 +6,5 @@ public class ApplicationConstants {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static final String NO_REPLY_EMAIL = "noreply@notification.com";
+    public static final String NO_REPLY_EMAIL = "teteuoliveira12@gmail.com";
 }
