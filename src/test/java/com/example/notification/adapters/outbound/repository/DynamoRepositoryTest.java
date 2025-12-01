@@ -3,11 +3,13 @@ package com.example.notification.adapters.outbound.repository;
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.model.NotificationRequest.Payload;
 import com.example.notification.core.model.NotificationRequest.User;
+import com.example.notification.shared.constants.ApplicationConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Value;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -24,29 +26,18 @@ import static org.mockito.Mockito.*;
 
 class DynamoRepositoryTest {
 
+    @Mock
     private DynamoDbClient dynamoDbClient;
-    private ObjectMapper objectMapper;
-    private DynamoRepository repository;
 
-    @Value("${table.notifications}")
-    private String TABLE;
+    @Mock
+    private ObjectMapper objectMapper;
+
+    private DynamoRepository repository;
 
     @BeforeEach
     void setup() {
-        dynamoDbClient = mock(DynamoDbClient.class);
-        objectMapper = mock(ObjectMapper.class);
-
+        MockitoAnnotations.openMocks(this);
         repository = new DynamoRepository(dynamoDbClient, objectMapper);
-
-        var field = DynamoRepository.class.getDeclaredFields();
-        for (var f : field) {
-            if (f.getName().equals("TABLE")) {
-                f.setAccessible(true);
-                try {
-                    f.set(repository, TABLE);
-                } catch (IllegalAccessException ignored) {}
-            }
-        }
     }
 
     private NotificationRequest buildNotification() {
@@ -77,10 +68,10 @@ class DynamoRepositoryTest {
         captor.getValue().accept(builder);
         PutItemRequest saved = builder.build();
 
-        assertThat(saved.tableName()).isEqualTo(TABLE);
-        assertThat(saved.item().get("id")).isEqualTo(AttributeValue.fromS("abc123"));
-        assertThat(saved.item().get("orderId")).isEqualTo(AttributeValue.fromN("10"));
-        assertThat(saved.item().get("payload")).isEqualTo(AttributeValue.fromS("{json}"));
+        assertThat(saved.tableName()).isEqualTo(ApplicationConstants.TABLE);
+        assertThat(saved.item()).containsEntry("id", AttributeValue.fromS("abc123"));
+        assertThat(saved.item()).containsEntry("orderId", AttributeValue.fromN("10"));
+        assertThat(saved.item()).containsEntry("payload", AttributeValue.fromS("{json}"));
     }
 
     @Test

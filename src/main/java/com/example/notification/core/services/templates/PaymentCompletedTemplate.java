@@ -10,6 +10,7 @@ import java.util.Map;
 public class PaymentCompletedTemplate implements TemplateServicePort {
 
     public PaymentCompletedTemplate() {
+        // Construtor vazio intencionalmente — não há dependências neste fake.
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.Map;
 public class ProductionCompletedTemplate implements TemplateServicePort {
 
     public ProductionCompletedTemplate() {
+        // Construtor vazio intencionalmente — não há dependências neste fake.
     }
 
     @Override

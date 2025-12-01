@@ -25,7 +25,7 @@ public class NotificationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> sendNotification(@RequestBody NotificationBodyDto body){
+    public ResponseEntity<String> sendNotification(@RequestBody NotificationBodyDto body){
         try {
             NotificationRequest request = converter.convertToNotifyRequest(body);
             service.notify(request);

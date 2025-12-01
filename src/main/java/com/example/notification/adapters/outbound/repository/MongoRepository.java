@@ -1,6 +1,7 @@
 package com.example.notification.adapters.outbound.repository;
 
 import com.example.notification.core.model.NotificationRequest;
+import com.example.notification.shared.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -14,9 +15,6 @@ public class MongoRepository implements RepositoryPort {
 
     private final MongoTemplate mongoTemplate;
 
-    @Value("${table.notifications}")
-    private String TABLE;
-
     public MongoRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -24,7 +22,7 @@ public class MongoRepository implements RepositoryPort {
     @Override
     public void save(NotificationRequest messageRequest) {
         try{
-            mongoTemplate.save(messageRequest, TABLE);
+            mongoTemplate.save(messageRequest, ApplicationConstants.TABLE);
         } catch (Exception e){
             log.error("[MongoRepository]: Error saving document {}", e.getMessage());
         }
@@ -32,7 +30,7 @@ public class MongoRepository implements RepositoryPort {
 
     @Override
     public NotificationRequest findById(String id) {
-        return mongoTemplate.findById(id, NotificationRequest.class, TABLE);
+        return mongoTemplate.findById(id, NotificationRequest.class, ApplicationConstants.TABLE);
     }
 }
 

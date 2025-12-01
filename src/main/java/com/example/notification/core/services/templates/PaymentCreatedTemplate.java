@@ -5,10 +5,7 @@ import com.example.notification.core.ports.TemplateServicePort;
 import com.example.notification.shared.utils.CurrencyFormatter;
 import com.example.notification.shared.utils.QrCodeGenerator;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
