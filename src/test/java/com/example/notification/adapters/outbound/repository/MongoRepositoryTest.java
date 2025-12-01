@@ -1,10 +1,10 @@
 package com.example.notification.adapters.outbound.repository;
 
 import com.example.notification.core.model.NotificationRequest;
+import com.example.notification.shared.constants.ApplicationConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.math.BigDecimal;
@@ -20,9 +20,6 @@ class MongoRepositoryTest {
     private MongoTemplate mongoTemplate;
 
     private MongoRepository repository;
-
-    @Value("${table.notifications}")
-    private String TABLE;
 
     @BeforeEach
     void setUp() {
@@ -52,8 +49,7 @@ class MongoRepositoryTest {
 
         repository.save(request);
 
-        verify(mongoTemplate, times(1))
-                .save(eq(request), eq(TABLE));
+        verify(mongoTemplate, times(1)).save(request, ApplicationConstants.TABLE);
     }
 
     @Test
@@ -66,15 +62,14 @@ class MongoRepositoryTest {
 
         assertDoesNotThrow(() -> repository.save(request));
 
-        verify(mongoTemplate, times(1))
-                .save(eq(request), eq(TABLE));
+        verify(mongoTemplate, times(1)).save(request, ApplicationConstants.TABLE);
     }
 
     @Test
     void findById_ShouldReturnDocument() {
         NotificationRequest expected = buildRequest();
 
-        when(mongoTemplate.findById("123", NotificationRequest.class, TABLE))
+        when(mongoTemplate.findById("123", NotificationRequest.class, ApplicationConstants.TABLE))
                 .thenReturn(expected);
 
         NotificationRequest result = repository.findById("123");
@@ -85,7 +80,7 @@ class MongoRepositoryTest {
 
     @Test
     void findById_ShouldReturnNullWhenNotFound() {
-        when(mongoTemplate.findById("123", NotificationRequest.class, TABLE))
+        when(mongoTemplate.findById("123", NotificationRequest.class, ApplicationConstants.TABLE))
                 .thenReturn(null);
 
         NotificationRequest result = repository.findById("123");

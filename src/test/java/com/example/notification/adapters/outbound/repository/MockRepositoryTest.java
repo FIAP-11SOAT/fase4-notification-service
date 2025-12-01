@@ -36,7 +36,7 @@ class MockRepositoryTest {
 
     @Test
     void repository_ShouldStartEmpty() {
-        assertTrue(repository.getMockRepository().isEmpty());
+        assertTrue(repository.getItems().isEmpty());
     }
 
     @Test
@@ -45,8 +45,8 @@ class MockRepositoryTest {
 
         repository.save(request);
 
-        assertTrue(repository.getMockRepository().containsKey("1"));
-        assertEquals(request, repository.getMockRepository().get("1"));
+        assertTrue(repository.getItems().containsKey("1"));
+        assertEquals(request, repository.getItems().get("1"));
     }
 
     @Test
@@ -57,8 +57,8 @@ class MockRepositoryTest {
         repository.save(req1);
         repository.save(req2);
 
-        assertEquals(req2, repository.getMockRepository().get("1"));
-        assertNotEquals(req1, repository.getMockRepository().get("1"));
+        assertEquals(req2, repository.getItems().get("1"));
+        assertNotEquals(req1, repository.getItems().get("1"));
     }
 
     @Test

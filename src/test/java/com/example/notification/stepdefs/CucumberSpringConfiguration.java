@@ -9,5 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
+@SuppressWarnings("java:S2187")
 public class CucumberSpringConfiguration {
 }

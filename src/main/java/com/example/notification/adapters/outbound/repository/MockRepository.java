@@ -15,15 +15,15 @@ import java.util.Map;
 @Profile("test")
 public class MockRepository implements RepositoryPort{
 
-    Map<String, NotificationRequest> mockRepository = new HashMap<>();
+    Map<String, NotificationRequest> items = new HashMap<>();
 
     @Override
     public void save(NotificationRequest messageRequest) {
-        mockRepository.put(messageRequest.id(), messageRequest);
+        items.put(messageRequest.id(), messageRequest);
     }
 
     @Override
     public NotificationRequest findById(String id) {
-        return mockRepository.get(id);
+        return items.get(id);
     }
 }

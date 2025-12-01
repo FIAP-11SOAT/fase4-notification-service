@@ -6,8 +6,12 @@ import java.util.Locale;
 
 public class CurrencyFormatter {
 
-    public static String convertToCurrencyString(BigDecimal valor){
-        NumberFormat formats = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        return formats.format(valor);
+    private CurrencyFormatter() {
+        // Construtor privado para evitar instanciação
+    }
+
+    public static String convertToCurrencyString(BigDecimal valor) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
+        return formatter.format(valor);
     }
 }

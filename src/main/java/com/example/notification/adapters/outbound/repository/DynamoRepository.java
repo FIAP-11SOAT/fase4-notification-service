@@ -1,6 +1,7 @@
 package com.example.notification.adapters.outbound.repository;
 
 import com.example.notification.core.model.NotificationRequest;
+import com.example.notification.shared.constants.ApplicationConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,6 @@ public class DynamoRepository implements RepositoryPort {
     private final DynamoDbClient dynamoDbClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${table.notifications}")
-    private String TABLE;
-
     public DynamoRepository(DynamoDbClient dynamoDbClient, ObjectMapper objectMapper) {
         this.dynamoDbClient = dynamoDbClient;
         this.objectMapper = objectMapper;
@@ -35,7 +33,7 @@ public class DynamoRepository implements RepositoryPort {
             item.put("id", AttributeValue.fromS(messageRequest.id()));
             item.put("orderId", AttributeValue.fromN(messageRequest.payload().orderId().toString()));
             item.put("payload", AttributeValue.fromS(serialize(messageRequest)));
-            dynamoDbClient.putItem(r -> r.tableName(TABLE).item(item));
+            dynamoDbClient.putItem(r -> r.tableName(ApplicationConstants.TABLE).item(item));
         } catch (Exception e){
             log.error("[DynamoRepository]: Error save() {}", e.getMessage());
             throw e;
@@ -48,7 +46,7 @@ public class DynamoRepository implements RepositoryPort {
                 "id", AttributeValue.fromS(id)
         );
 
-        var response = dynamoDbClient.getItem(r -> r.tableName(TABLE).key(key));
+        var response = dynamoDbClient.getItem(r -> r.tableName(ApplicationConstants.TABLE).key(key));
 
         if (!response.hasItem()) return null;
 
