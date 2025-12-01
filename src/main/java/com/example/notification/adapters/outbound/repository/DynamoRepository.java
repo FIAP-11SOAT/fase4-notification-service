@@ -2,9 +2,10 @@ package com.example.notification.adapters.outbound.repository;
 
 import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.shared.constants.ApplicationConstants;
+import com.example.notification.shared.exceptions.ErrorType;
+import com.example.notification.shared.exceptions.ExceptionUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -58,7 +59,7 @@ public class DynamoRepository implements RepositoryPort {
             return objectMapper.writeValueAsString(req);
         } catch (Exception e) {
             log.error("[DynamoRepository]: Error serialize() {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw ExceptionUtils.internalError(ErrorType.REPOSITORY_ERROR, e);
         }
     }
 
@@ -67,7 +68,7 @@ public class DynamoRepository implements RepositoryPort {
             return objectMapper.readValue(data, NotificationRequest.class);
         } catch (Exception e) {
             log.error("[DynamoRepository]: Error deserialize() {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw ExceptionUtils.internalError(ErrorType.REPOSITORY_ERROR, e);
         }
     }
 }

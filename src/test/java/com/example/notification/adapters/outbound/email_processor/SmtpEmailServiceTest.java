@@ -1,6 +1,7 @@
 package com.example.notification.adapters.outbound.email_processor;
 
 import com.example.notification.adapters.outbound.dto.EmailDto;
+import com.example.notification.shared.exceptions.ErrorType;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class SmtpEmailServiceTest {
         );
 
         org.junit.jupiter.api.Assertions.assertTrue(
-                exception.getMessage().contains("Erro ao enviar e-mail")
+                exception.getMessage().contains(ErrorType.ERROR_SENDING_EMAIL.getMessage())
         );
     }
 

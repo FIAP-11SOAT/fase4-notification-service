@@ -1,5 +1,7 @@
 package com.example.notification.shared.utils;
 
+import com.example.notification.shared.exceptions.ErrorType;
+import com.example.notification.shared.exceptions.ExceptionUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -20,7 +22,7 @@ public class QrCodeGenerator {
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
             return Base64.getEncoder().encodeToString(outputStream.toByteArray());
         } catch (Exception  e) {
-            throw new RuntimeException("Erro ao gerar QR Code", e);
+            throw ExceptionUtils.internalError(ErrorType.ERROR_GENERATING_QR_CODE, e);
         }
     }
 }

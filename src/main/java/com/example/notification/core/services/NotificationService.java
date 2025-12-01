@@ -8,6 +8,8 @@ import com.example.notification.core.ports.NotificationServicePort;
 import com.example.notification.core.ports.TemplateServicePort;
 import com.example.notification.core.services.templates.*;
 import com.example.notification.shared.constants.EventTypeEnum;
+import com.example.notification.shared.exceptions.ErrorType;
+import com.example.notification.shared.exceptions.ExceptionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +53,7 @@ public class NotificationService implements NotificationServicePort {
             TemplateServicePort templateService = templates.get(request.eventType());
 
             if (templateService == null) {
-                throw new IllegalArgumentException("No template found for event: " + request.eventType());
+                throw ExceptionUtils.badRequest(ErrorType.INVALID_EVENT_TYPE, null);
             }
 
             String htmlBody = templateRendererService.render(
