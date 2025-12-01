@@ -1,5 +1,7 @@
 package com.example.notification.shared.constants;
 
+import com.example.notification.shared.exceptions.ErrorType;
+import com.example.notification.shared.exceptions.ExceptionUtils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -30,6 +32,6 @@ public enum EventTypeEnum {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown event type: " + value);
+        throw ExceptionUtils.badRequest(ErrorType.INVALID_EVENT_TYPE, null);
     }
 }

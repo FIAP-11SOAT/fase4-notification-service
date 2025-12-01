@@ -4,6 +4,7 @@ import com.example.notification.core.model.NotificationRequest;
 import com.example.notification.core.model.NotificationRequest.Payload;
 import com.example.notification.core.model.NotificationRequest.User;
 import com.example.notification.shared.constants.ApplicationConstants;
+import com.example.notification.shared.exceptions.ErrorType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ class DynamoRepositoryTest {
 
         assertThatThrownBy(() -> repository.save(request))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("fail");
+                .hasMessageContaining(ErrorType.REPOSITORY_ERROR.getMessage());
     }
 
     @Test
@@ -132,6 +133,6 @@ class DynamoRepositoryTest {
 
         assertThatThrownBy(() -> repository.findById("abc123"))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("json-error");
+                .hasMessageContaining(ErrorType.REPOSITORY_ERROR.getMessage());
     }
 }
