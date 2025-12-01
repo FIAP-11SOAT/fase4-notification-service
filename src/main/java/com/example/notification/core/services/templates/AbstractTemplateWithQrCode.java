@@ -11,7 +11,7 @@ public abstract class AbstractTemplateWithQrCode implements TemplateServicePort 
 
     private final QrCodeGenerator qrCodeGenerator;
 
-    public AbstractTemplateWithQrCode(QrCodeGenerator qrCodeGenerator) {
+    protected AbstractTemplateWithQrCode(QrCodeGenerator qrCodeGenerator) {
         this.qrCodeGenerator = qrCodeGenerator;
     }
 
