@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "event_id": "8e3f4e3e-1234-4c9b-b9b1-111111111112",
+    "event_target": "notification-service-queue",
+    "event_name": "payment-created-event"
+  },
+  "payload": {
+    "customer_name": "Fulano de Tal",
+    "customer_email": "fulanodetal@gmail.com",
+    "order_id": 5698,
+    "items": [
+      { "productId": 1, "name": "Hambúrguer", "quantity": 2 },
+      { "productId": 3, "name": "Batata Frita", "quantity": 1 }
+    ],
+    "amount": 59.65,
+    "qr_code": "00020101021243650016COM.MERCADOLIBRE020130636bc071ef6-eac8-4fd0-b283-928d15a764845204000053039865802BR5923VendedorTCFiapUmMeiaUm6009SAOPAULO62070503***6304E983"
+  }
+}
