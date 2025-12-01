@@ -2,6 +2,10 @@ package com.example.notification.shared.exceptions;
 
 public class ExceptionUtils {
 
+    private ExceptionUtils() {
+        // Construtor privado para evitar instanciação
+    }
+
     public static NotificationAPIException exception(
             ErrorType errorType, int httpStatus, Exception exception
     ) {
