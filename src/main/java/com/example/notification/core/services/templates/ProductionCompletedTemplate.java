@@ -1,13 +1,9 @@
 package com.example.notification.core.services.templates;
 
-import com.example.notification.core.model.NotificationRequest;
-import com.example.notification.core.ports.TemplateServicePort;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
-public class ProductionCompletedTemplate implements TemplateServicePort {
+public class ProductionCompletedTemplate extends AbstractTemplateNoQrCode {
 
     public ProductionCompletedTemplate() {
         // Construtor vazio intencionalmente — não há dependências neste fake.
@@ -21,14 +17,5 @@ public class ProductionCompletedTemplate implements TemplateServicePort {
     @Override
     public String getEmailSubject() {
         return "Totem: Seu pedido está pronto \uD83C\uDF54";
-    }
-
-    @Override
-    public Map<String, Object> getVariables(NotificationRequest.User user, NotificationRequest.Payload payload) {
-        return Map.of(
-                "customerName", user.name(),
-                "orderId", payload.orderId(),
-                "items", payload.items()
-        );
     }
 }
