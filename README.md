@@ -27,10 +27,18 @@ Para facilitar, use o script `run-dev.sh` descrito abaixo. Ele realiza os seguin
 3. Sobe a aplicação Spring Boot com o profile `dev`.
 4. Envia uma mensagem de exemplo para a fila SQS local (`notification-queue`), usando o script `send-sqs-localstack.sh`.
 
-Para rodar o ambiente de desenvolvimento:
+Rode o ambiente de desenvolvimento:
 
 ``
 ./run-dev.sh
+``
+
+Abra um novo terminal
+
+Crie a fila sqs e envie uma notificação:
+
+``
+./send-sqs-localstack.sh
 ``
 
 Certifique-se de que o script `send-sqs-localstack.sh` já exista e esteja configurado para enviar a mensagem usando o JSON em `src/test/resources` (ou outro caminho que você definiu).
