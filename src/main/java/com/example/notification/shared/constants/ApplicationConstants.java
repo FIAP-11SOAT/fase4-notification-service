@@ -9,6 +9,6 @@ public class ApplicationConstants {
         throw ExceptionUtils.internalError(ErrorType.UTILITY_CLASS_ERROR, null);
     }
 
-    public static final String NO_REPLY_EMAIL = "teteuoliveira12@gmail.com";
+    public static final String NO_REPLY_EMAIL = "mandacosta94@gmail.com";
     public static final String TABLE = "notification-service-production-notifications";
 }

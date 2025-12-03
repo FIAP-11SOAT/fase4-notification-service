@@ -6,7 +6,7 @@
   },
   "payload": {
     "customer_name": "Fulano de Tal",
-    "customer_email": "fulanodetal@gmail.com",
+    "customer_email": "mandacosta94@gmail.com",
     "order_id": 5698,
     "items": [
       { "productId": 1, "name": "Hambúrguer", "quantity": 2 },
