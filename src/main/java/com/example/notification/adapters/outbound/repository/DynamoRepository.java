@@ -35,6 +35,7 @@ public class DynamoRepository implements RepositoryPort {
             item.put("orderId", AttributeValue.fromN(messageRequest.payload().orderId().toString()));
             item.put("payload", AttributeValue.fromS(serialize(messageRequest)));
             dynamoDbClient.putItem(r -> r.tableName(ApplicationConstants.TABLE).item(item));
+            log.info("[DynamoRepository]: save()");
         } catch (Exception e){
             log.error("[DynamoRepository]: Error save() {}", e.getMessage());
             throw e;
