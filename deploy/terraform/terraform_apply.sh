@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BACKEND_SCRIPT="$BASE_DIR/backend/create_backend_bucket.sh"
+BACKEND_SCRIPT="$BASE_DIR/backend/backend_bucket_infra.sh"
 TERRAFORM_DIR="$BASE_DIR"
 
 echo "============================================"

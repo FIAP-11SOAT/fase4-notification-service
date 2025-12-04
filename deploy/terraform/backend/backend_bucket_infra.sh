@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REGION="us-east-1"
-BUCKET_NAME="notification-service-tfstate-268021560448"
+BUCKET_NAME="ec2-notification-service-tfstate-268021560448"
 
 if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
   echo "✅ Bucket $BUCKET_NAME já existe."
