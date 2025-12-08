@@ -62,6 +62,7 @@ data "aws_iam_policy_document" "notification_consumer" {
       "sqs:DeleteMessage",
       "sqs:ChangeMessageVisibility",
       "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl"
     ]
 
     resources = [
@@ -139,7 +140,7 @@ resource "aws_ecs_task_definition" "notification_task" {
   container_definitions = jsonencode([
     {
       name      = "notification-container",
-      image     = "${aws_ecr_repository.main.repository_url}:latest",
+      image     = "${aws_ecr_repository.main.repository_url}:1.0",
       essential = true,
       portMappings = [
         {
@@ -148,8 +149,17 @@ resource "aws_ecs_task_definition" "notification_task" {
         }
       ],
       environment = [
-        { name = "QUEUE_URL", value = aws_sqs_queue.notification_queue.url }
+        { name = "QUEUE_URL", value = aws_sqs_queue.notification_queue.url },
+        { name = "SPRING_PROFILES_ACTIVE", value = "prod" }
       ]
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "/ecs/notification-service",
+          "awslogs-region"        = "us-east-1",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }
@@ -180,6 +190,12 @@ resource "aws_ecs_service" "notification_service" {
     assign_public_ip = true
   }
 }
+
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/notification-service"
+  retention_in_days = 7
+}
+
 
 
 
