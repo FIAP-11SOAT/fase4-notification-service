@@ -36,13 +36,13 @@ resource "aws_iam_user_policy_attachment" "ses_policy" {
   policy_arn = aws_iam_policy.ses_send.arn
 }
 
-resource "aws_secretsmanager_secret" "smtp_credentials" {
-  name                    = "smtp-credentials"
+resource "aws_secretsmanager_secret" "smtp_credentials_ses" {
+  name                    = "smtp-credentials-ses"
   recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "smtp_credentials_version" {
-  secret_id = aws_secretsmanager_secret.smtp_credentials.id
+  secret_id = aws_secretsmanager_secret.smtp_credentials_ses.id
 
   secret_string = jsonencode({
     username = aws_iam_access_key.ses_smtp.id

@@ -86,7 +86,7 @@ data "terraform_remote_state" "notification_infra" {
   }
 }
 
-// Adição da política de envio de mensagens à fila notification-queue
+// Anexa a policy de producer ao role do serviço
 resource "aws_iam_role_policy_attachment" "attach_sqs_send_to_ms1" {
   role       = aws_iam_role.ms1_ec2_role.name
   policy_arn = data.terraform_remote_state.notification_infra.outputs.notification_queue_producer_policy_arn
