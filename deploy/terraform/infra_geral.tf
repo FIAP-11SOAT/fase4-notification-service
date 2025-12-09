@@ -124,7 +124,17 @@ resource "aws_ecs_task_definition" "notification_task" {
   container_definitions = jsonencode([
     {
       name      = "notification-container",
-      image     = "${aws_ecr_repository.main.repository_url}:1.1",
+      image     = "${aws_ecr_repository.main.repository_url}:${var.ecr_image_tag}",
+      secrets = [
+        {
+          name      = "SPRING_MAIL_USERNAME"
+          valueFrom = "${aws_secretsmanager_secret.smtp_credentials_ses.arn}:username::"
+        },
+        {
+          name      = "SPRING_MAIL_PASSWORD"
+          valueFrom = "${aws_secretsmanager_secret.smtp_credentials_ses.arn}:password::"
+        }
+      ]
       essential = true,
       portMappings = [
         {
