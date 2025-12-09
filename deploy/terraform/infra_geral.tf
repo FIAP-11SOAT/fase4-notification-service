@@ -1,60 +1,48 @@
-########################
-# VPC + Subnet pública
-########################
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-
-  tags = { Name = "demo-vpc" }
+variable "shared_secret_name" {
+  type        = string
+  description = "Nome do secret com info de infra compartilhada"
+  default     = "fase4-infra-microservices-secrets"
 }
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-
-  tags = { Name = "demo-igw" }
+variable "service_name" {
+  type        = string
+  description = "Nome lógico do serviço"
+  default     = "notification-service"
 }
 
-resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
-
-  tags = { Name = "demo-public-subnet" }
+variable "ecr_image_tag" {
+  type        = string
+  description = "Tag da imagem do ECR"
+  default     = "latest"
 }
 
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-
-  tags = { Name = "demo-public-rt" }
+data "aws_secretsmanager_secret" "shared" {
+  name = var.shared_secret_name
 }
 
-resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
+data "aws_secretsmanager_secret_version" "shared" {
+  secret_id = data.aws_secretsmanager_secret.shared.id
 }
 
-########################
-# IAM Role da EC2
-########################
-data "aws_iam_policy_document" "notification_service_trust" {
-  statement {
-    actions = ["sts:AssumeRole"]
+locals {
+  shared = jsondecode(data.aws_secretsmanager_secret_version.shared.secret_string)
+}
 
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
+data "aws_vpc" "main" {
+  id = local.shared["VPC_ID"]
+}
+
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.main.id]
   }
 }
 
-# Policy para CONSUMIR a fila
+data "aws_ecs_cluster" "main" {
+  cluster_name = local.shared["ECS_CLUSTER_ID"]
+}
+
 data "aws_iam_policy_document" "notification_consumer" {
   statement {
     actions = [
@@ -75,10 +63,6 @@ resource "aws_iam_policy" "notification_consumer" {
   name        = "notification-service-consume-notification-queue"
   description = "Allow notification-service to consume messages from notification-queue"
   policy      = data.aws_iam_policy_document.notification_consumer.json
-}
-
-resource "aws_ecs_cluster" "main" {
-  name = "notification-service-cluster"
 }
 
 resource "aws_iam_role" "ecs_execution_role" {
@@ -140,7 +124,7 @@ resource "aws_ecs_task_definition" "notification_task" {
   container_definitions = jsonencode([
     {
       name      = "notification-container",
-      image     = "${aws_ecr_repository.main.repository_url}:1.0",
+      image     = "${aws_ecr_repository.main.repository_url}:1.1",
       essential = true,
       portMappings = [
         {
@@ -167,7 +151,7 @@ resource "aws_ecs_task_definition" "notification_task" {
 resource "aws_security_group" "ecs_sg" {
   name        = "notification-service-ecs-sg"
   description = "SG for notification-service Fargate Tasks"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 
   egress {
     from_port   = 0
@@ -179,13 +163,13 @@ resource "aws_security_group" "ecs_sg" {
 
 resource "aws_ecs_service" "notification_service" {
   name            = "notification-service"
-  cluster         = aws_ecs_cluster.main.id
+  cluster         = data.aws_ecs_cluster.main.arn
   task_definition = aws_ecs_task_definition.notification_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [aws_subnet.public.id]
+    subnets = data.aws_subnets.public.ids
     security_groups = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
@@ -195,11 +179,3 @@ resource "aws_cloudwatch_log_group" "ecs_logs" {
   name              = "/ecs/notification-service"
   retention_in_days = 7
 }
-
-
-
-
-
-
-
-
