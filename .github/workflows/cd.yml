@@ -122,3 +122,10 @@ jobs:
       - name: Terraform Apply (Update ECS)
         working-directory: deploy/terraform
         run: terraform apply -auto-approve
+
+      - name: Force ECS new deployment
+        run: |
+          aws ecs update-service \
+            --cluster fase4-infra-microservices-ecs-cluster \
+            --service notification-service \
+            --force-new-deployment
