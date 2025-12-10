@@ -52,6 +52,11 @@ jobs:
       # 6. APLICAR TERRAFORM
       # (Cria ECR + ECS + Secrets etc)
       # ============================
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
       - name: Terraform Init
         working-directory: deploy/terraform
         run: terraform init
