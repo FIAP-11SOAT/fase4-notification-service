@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "notification_queue" {
-  name = "notification-queue"
+  name = "${var.project_name}-queue"
 
   visibility_timeout_seconds = 30
   message_retention_seconds  = 345600 # 4 dias
@@ -8,7 +8,7 @@ resource "aws_sqs_queue" "notification_queue" {
   receive_wait_time_seconds  = 5
 
   tags = {
-    Service     = "notification-service"
+    Service     = "${var.project_name}"
     Environment = "prod"
   }
 }
@@ -22,7 +22,7 @@ output "notification_queue_arn" {
 }
 
 resource "aws_iam_policy" "producers_send_to_notification_queue" {
-  name        = "producers-send-to-notification-queue"
+  name        = "${var.project_name}-send-queue-policy"
   description = "Allow producer services to send messages to notification-queue"
 
   policy = jsonencode({
