@@ -120,5 +120,5 @@ jobs:
         run: |
           aws ecs update-service \
             --cluster fase4-infra-microservices-ecs-cluster \
-            --service notification-service \
+            --service fase4-notification-service \
             --force-new-deployment
