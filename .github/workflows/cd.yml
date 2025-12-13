@@ -3,6 +3,8 @@ name: CD - Deploy Pipeline
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   deploy:
@@ -27,13 +29,6 @@ jobs:
           aws-region: us-east-1
 
       # ============================
-      # 3. BACKEND (S3 + DYNAMODB)
-      # ============================
-      - name: Create Terraform Backend Infra
-        working-directory: deploy/terraform/backend
-        run: chmod +x backend_bucket_infra.sh && ./backend_bucket_infra.sh
-
-      # ============================
       # 4. OBTER ACCOUNT ID AWS
       # ============================
       - name: Get AWS Account ID
@@ -53,7 +48,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.9.5
+          terraform_version: 1.11.x
 
       - name: Terraform Init
         working-directory: deploy/terraform
@@ -94,7 +89,7 @@ jobs:
       # ============================
       - name: Build Docker image
         run: |
-          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/notification-service-prod"
+          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/fase4-notification-service-ecr"
           docker build -t notification-service .
           docker tag notification-service:latest "$ECR_URL:$IMAGE_TAG"
 
@@ -103,7 +98,7 @@ jobs:
       # ============================
       - name: Push Docker image
         run: |
-          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/notification-service-prod"
+          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/fase4-notification-service-ecr"
           docker push "$ECR_URL:$IMAGE_TAG"
 
       # ============================
@@ -125,5 +120,5 @@ jobs:
         run: |
           aws ecs update-service \
             --cluster fase4-infra-microservices-ecs-cluster \
-            --service notification-service \
+            --service fase4-notification-service \
             --force-new-deployment
