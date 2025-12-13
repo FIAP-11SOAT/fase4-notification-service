@@ -89,7 +89,7 @@ jobs:
       # ============================
       - name: Build Docker image
         run: |
-          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/notification-service-prod"
+          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/fase4-notification-service-ecr"
           docker build -t notification-service .
           docker tag notification-service:latest "$ECR_URL:$IMAGE_TAG"
 
@@ -98,7 +98,7 @@ jobs:
       # ============================
       - name: Push Docker image
         run: |
-          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/notification-service-prod"
+          ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/fase4-notification-service-ecr"
           docker push "$ECR_URL:$IMAGE_TAG"
 
       # ============================
