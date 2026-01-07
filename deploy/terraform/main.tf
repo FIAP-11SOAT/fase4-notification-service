@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "tc-fase4-notification-service-tfstate"
+    bucket = "tc-fiap-fase4-notification-service-tfstate"
     key    = "terraform.tfstate"
     region = "us-east-1"
   }
