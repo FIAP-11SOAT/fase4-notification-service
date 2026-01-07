@@ -4,12 +4,6 @@ variable "shared_secret_name" {
   default     = "fase4-infra-microservices-secrets"
 }
 
-variable "service_name" {
-  type        = string
-  description = "Nome lógico do serviço"
-  default     = "notification-service"
-}
-
 variable "ecr_image_tag" {
   type        = string
   description = "Tag da imagem do ECR"
@@ -60,13 +54,13 @@ data "aws_iam_policy_document" "notification_consumer" {
 }
 
 resource "aws_iam_policy" "notification_consumer" {
-  name        = "notification-service-consume-notification-queue"
+  name        = "${var.project_name}-consume-notification-queue"
   description = "Allow notification-service to consume messages from notification-queue"
   policy      = data.aws_iam_policy_document.notification_consumer.json
 }
 
 resource "aws_iam_role" "ecs_execution_role" {
-  name = "ecs-execution-role"
+  name = "${var.project_name}-ecsTaskExecutionRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -79,7 +73,7 @@ resource "aws_iam_role" "ecs_execution_role" {
 }
 
 resource "aws_iam_role_policy" "ecs_execution_role_secrets_policy" {
-  name = "ecs-execution-secrets-ses-policy"
+  name = "${var.project_name}-ecs-execution-secrets-ses-policy"
   role = aws_iam_role.ecs_execution_role.id
 
   policy = jsonencode({
@@ -103,7 +97,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name = "notification-service-task-role"
+  name = "${var.project_name}-ecsTaskRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -131,7 +125,7 @@ resource "aws_iam_role_policy_attachment" "task_secretsmanager" {
 }
 
 resource "aws_ecs_task_definition" "notification_task" {
-  family                   = "notification-service-task"
+  family                   = "${var.project_name}-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "512"
@@ -168,7 +162,7 @@ resource "aws_ecs_task_definition" "notification_task" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          "awslogs-group"         = "/ecs/notification-service",
+          "awslogs-group"         = "/ecs/${var.project_name}",
           "awslogs-region"        = "us-east-1",
           "awslogs-stream-prefix" = "ecs"
         }
@@ -178,7 +172,7 @@ resource "aws_ecs_task_definition" "notification_task" {
 }
 
 resource "aws_security_group" "ecs_sg" {
-  name        = "notification-service-ecs-sg"
+  name        = "${var.project_name}-ecs-sg"
   description = "SG for notification-service Fargate Tasks"
   vpc_id      = data.aws_vpc.main.id
 
@@ -191,7 +185,7 @@ resource "aws_security_group" "ecs_sg" {
 }
 
 resource "aws_ecs_service" "notification_service" {
-  name            = "notification-service"
+  name            = "${var.project_name}"
   cluster         = data.aws_ecs_cluster.main.arn
   task_definition = aws_ecs_task_definition.notification_task.arn
   desired_count   = 1
@@ -205,6 +199,6 @@ resource "aws_ecs_service" "notification_service" {
 }
 
 resource "aws_cloudwatch_log_group" "ecs_logs" {
-  name              = "/ecs/notification-service"
+  name              = "/ecs/${var.project_name}"
   retention_in_days = 7
 }

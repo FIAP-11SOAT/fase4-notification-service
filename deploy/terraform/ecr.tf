@@ -1,6 +1,6 @@
 # ECR Repository
 resource "aws_ecr_repository" "main" {
-  name                 = "notification-service-prod"
+  name                 = "${var.project_name}-ecr"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -12,7 +12,7 @@ resource "aws_ecr_repository" "main" {
   }
 
   tags = merge(var.tags, {
-    Name = "notification-service-prod-ecr"
+    Name = "${var.project_name}-ecr"
   })
 }
 
